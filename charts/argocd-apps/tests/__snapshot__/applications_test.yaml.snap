@@ -1,0 +1,262 @@
+should have correct applications:
+  1: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      labels:
+        app.kubernetes.io/application-name: authoringtool-frontend
+        app.kubernetes.io/branch: feature-new-pipeline
+        app.kubernetes.io/environment-name: test
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/version: 1.0.0
+        environment-manager/logo: authoringtool-frontend.png
+        helm.sh/chart: argocd-apps-1.0.0
+      name: authoringtool-frontend-test
+    spec:
+      destination:
+        namespace: tool-prod-axa-rev
+        server: https://kubernetes.default.svc
+      project: tool-prod-axa-rev
+      source:
+        helm:
+          parameters:
+            - name: global.environmentName
+              value: test
+            - name: global.branch
+              value: feature-new-pipeline
+            - name: global.applicationName
+              value: authoringtool-frontend
+            - name: app.image.tag
+              value: $ARGOCD_APP_REVISION
+          valueFiles:
+            - values.yaml
+        path: helm
+        repoURL: https://github.com/AXATechLab/cc-authoring-client
+        targetRevision: feature/new-pipeline
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+  2: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      labels:
+        app.kubernetes.io/application-name: credentials
+        app.kubernetes.io/branch: main
+        app.kubernetes.io/environment-name: test
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/version: 1.0.0
+        helm.sh/chart: argocd-apps-1.0.0
+      name: credentials-test
+    spec:
+      destination:
+        namespace: tool-prod-axa-rev
+        server: https://kubernetes.default.svc
+      project: tool-prod-axa-rev
+      source:
+        helm:
+          parameters:
+            - name: global.environmentName
+              value: test
+            - name: global.branch
+              value: main
+            - name: global.applicationName
+              value: credentials
+          valueFiles:
+            - values.yaml
+            - values-prod.yaml
+        path: preprod/credentials
+        repoURL: https://github.com/AXATechLab/cc-applications
+        targetRevision: main
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+  3: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      labels:
+        app.kubernetes.io/application-name: demo-fastify
+        app.kubernetes.io/branch: main
+        app.kubernetes.io/environment-name: test
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/version: 1.0.0
+        helm.sh/chart: argocd-apps-1.0.0
+      name: demo-fastify-test
+    spec:
+      destination:
+        namespace: tool-prod-axa-rev
+        server: https://kubernetes.default.svc
+      project: tool-prod-axa-rev
+      source:
+        helm:
+          parameters:
+            - name: global.environmentName
+              value: test
+            - name: global.branch
+              value: main
+            - name: global.applicationName
+              value: demo-fastify
+            - name: app.image.tag
+              value: $ARGOCD_APP_REVISION
+            - name: test.enabled
+              value: "true"
+          valueFiles:
+            - values.yaml
+        path: helm
+        repoURL: https://github.com/AXATechLab/demo-fastify
+        targetRevision: main
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+should have correct sync policy with default false:
+  1: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      labels:
+        app.kubernetes.io/application-name: demo-fastify
+        app.kubernetes.io/branch: main
+        app.kubernetes.io/environment-name: my-release
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/version: 1.0.0
+        helm.sh/chart: argocd-apps-1.0.0
+      name: demo-fastify-my-release
+    spec:
+      destination:
+        namespace: tool-prod-axa-rev
+        server: https://kubernetes.default.svc
+      project: tool-prod-axa-rev
+      source:
+        helm:
+          parameters:
+            - name: global.environmentName
+              value: my-release
+            - name: global.branch
+              value: main
+            - name: global.applicationName
+              value: demo-fastify
+          valueFiles:
+            - values.yaml
+        path: helm
+        repoURL: https://github.com/AXATechLab/demo-fastify
+        targetRevision: main
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+  2: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      labels:
+        app.kubernetes.io/application-name: demo-fastify-2
+        app.kubernetes.io/branch: main
+        app.kubernetes.io/environment-name: my-release
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/version: 1.0.0
+        helm.sh/chart: argocd-apps-1.0.0
+      name: demo-fastify-2-my-release
+    spec:
+      destination:
+        namespace: tool-prod-axa-rev
+        server: https://kubernetes.default.svc
+      project: tool-prod-axa-rev
+      source:
+        helm:
+          parameters:
+            - name: global.environmentName
+              value: my-release
+            - name: global.branch
+              value: main
+            - name: global.applicationName
+              value: demo-fastify-2
+          valueFiles:
+            - values.yaml
+        path: helm
+        repoURL: https://github.com/AXATechLab/demo-fastify
+        targetRevision: main
+should have correct sync policy with default true:
+  1: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      labels:
+        app.kubernetes.io/application-name: demo-fastify
+        app.kubernetes.io/branch: main
+        app.kubernetes.io/environment-name: my-release
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/version: 1.0.0
+        helm.sh/chart: argocd-apps-1.0.0
+      name: demo-fastify-my-release
+    spec:
+      destination:
+        namespace: tool-prod-axa-rev
+        server: https://kubernetes.default.svc
+      project: tool-prod-axa-rev
+      source:
+        helm:
+          parameters:
+            - name: global.environmentName
+              value: my-release
+            - name: global.branch
+              value: main
+            - name: global.applicationName
+              value: demo-fastify
+          valueFiles:
+            - values.yaml
+        path: helm
+        repoURL: https://github.com/AXATechLab/demo-fastify
+        targetRevision: main
+  2: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+      labels:
+        app.kubernetes.io/application-name: demo-fastify-2
+        app.kubernetes.io/branch: main
+        app.kubernetes.io/environment-name: my-release
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/version: 1.0.0
+        helm.sh/chart: argocd-apps-1.0.0
+      name: demo-fastify-2-my-release
+    spec:
+      destination:
+        namespace: tool-prod-axa-rev
+        server: https://kubernetes.default.svc
+      project: tool-prod-axa-rev
+      source:
+        helm:
+          parameters:
+            - name: global.environmentName
+              value: my-release
+            - name: global.branch
+              value: main
+            - name: global.applicationName
+              value: demo-fastify-2
+          valueFiles:
+            - values.yaml
+        path: helm
+        repoURL: https://github.com/AXATechLab/demo-fastify
+        targetRevision: main
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

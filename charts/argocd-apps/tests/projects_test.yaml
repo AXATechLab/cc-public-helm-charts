@@ -1,0 +1,17 @@
+suite: test argocd-apps applications
+templates:
+  - templates/projects.yaml
+chart:
+  version: 1.0.0
+release:
+  name: my-release
+tests:
+  - it: should have correct applications
+    set:
+      projects:
+        tool-prod-axa-rev:
+          namespace: tool-prod-axa-rev
+        productmodeler-prod-green:
+          namespace: productmodellingtool-prod-axa-rev
+    asserts:
+      - matchSnapshot: {}

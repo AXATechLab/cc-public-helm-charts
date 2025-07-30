@@ -1,0 +1,19 @@
+{{ $values := .Values -}}
+{{- range $projectName, $project := .Values.projects }}
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{ $projectName }}
+  namespace: tool-prod-axa-rev
+spec:
+  destinations:
+    - name: '*'
+      namespace: {{ $project.namespace | quote }}
+      server: 'https://kubernetes.default.svc'
+    - name: '*-applications'
+      namespace: "tool-prod-axa-rev"
+      server: 'https://kubernetes.default.svc'
+  sourceRepos:
+    - '*'
+---
+{{- end }}

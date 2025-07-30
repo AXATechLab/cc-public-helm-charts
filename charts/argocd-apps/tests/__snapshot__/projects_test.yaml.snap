@@ -1,0 +1,33 @@
+should have correct applications:
+  1: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: AppProject
+    metadata:
+      name: productmodeler-prod-green
+      namespace: tool-prod-axa-rev
+    spec:
+      destinations:
+        - name: '*'
+          namespace: productmodellingtool-prod-axa-rev
+          server: https://kubernetes.default.svc
+        - name: '*-applications'
+          namespace: tool-prod-axa-rev
+          server: https://kubernetes.default.svc
+      sourceRepos:
+        - '*'
+  2: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: AppProject
+    metadata:
+      name: tool-prod-axa-rev
+      namespace: tool-prod-axa-rev
+    spec:
+      destinations:
+        - name: '*'
+          namespace: tool-prod-axa-rev
+          server: https://kubernetes.default.svc
+        - name: '*-applications'
+          namespace: tool-prod-axa-rev
+          server: https://kubernetes.default.svc
+      sourceRepos:
+        - '*'

@@ -1,0 +1,37 @@
+environmentName: ""
+
+default:
+  namespace: tool-prod-axa-rev
+  project: tool-prod-axa-rev
+  branch: main
+  path: helm
+  autoSync: true
+
+projects: {}
+#   tool-prod-axa-rev:
+#      namespace: tool-prod-axa-rev
+
+applications: {}
+# You can add applications here, you can override the default values, e.g.:
+#  demo-fastify:
+#    repoURL: 'https://github.com/AXATechLab/demo-fastify'
+#    parameters:
+#      app.image.tag: '$ARGOCD_APP_REVISION'
+#  authoringtool-frontend:
+#    repoURL: 'https://github.com/AXATechLab/cc-authoring-client'
+#    branch: "feature/new-pipeline"
+#    environmentManagerLogo: 'authoringtool-frontend.png' # by adding this the application will be listed in the home page of the environment manager with the specified logo
+#    autoSync: true
+#    parameters:
+#      app.image.tag: '$ARGOCD_APP_REVISION'
+#  credentials:
+#    repoURL: 'https://github.com/AXATechLab/cc-applications'
+#    path: preprod/credentials
+#    extraValuesFiles:
+#      - values-prod.yaml
+#  demo-fastify-prod:
+#    repoURL: 'https://github.com/AXATechLab/demo-fastify'
+#    alias: 'demo-fastify-alternative'
+#    valuesFiles:
+#      - values.yaml
+#      - values-prod.yaml

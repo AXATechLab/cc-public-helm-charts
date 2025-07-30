@@ -1,0 +1,70 @@
+{{ $values := .Values -}}
+{{- range $applicationName, $application := .Values.applications }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  {{- if $application.name }}
+  name : {{ $application.name }}
+  {{- else }}
+  name: {{ printf "%s-%s" $applicationName (include "argocd-applications.environmentName" $) | trunc 62 | trimAll "-" | quote }}
+  {{ end }}
+  labels:
+    {{- include "argocd-applications.labels" $ | nindent 4 }}
+    {{- if $application.environmentManagerLogo }}
+    environment-manager/logo: {{ $application.environmentManagerLogo | quote }}
+    {{- end }}
+    app.kubernetes.io/application-name: {{ $application.alias | default $applicationName | include "toSlug" | quote }}
+    app.kubernetes.io/branch: {{ $application.branch | default $values.default.branch | include "toSlug" | trunc 63 | trimSuffix "-" | quote }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: {{ $application.namespace | default $values.default.namespace | quote }}
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: {{ $application.path | default $values.default.path | quote }}
+    repoURL: {{ $application.repoURL | quote }}
+    targetRevision: {{ $application.branch | default $values.default.branch | quote }}
+    helm:
+      valueFiles:
+        {{- if $application.valuesFiles }}
+        {{- range $application.valuesFiles }}
+        - {{ . | quote }}
+        {{- end -}}
+        {{- else }}
+        - values.yaml
+        {{- end }}
+        {{- if $application.extraValuesFiles }}
+        {{- range $application.extraValuesFiles }}
+        - {{ . | quote }}
+        {{- end -}}
+        {{- end }}
+      {{- if $application.valuesObject }}
+      valuesObject:
+        {{ toYaml $application.valuesObject | nindent 8 }}
+      {{- end }}
+      parameters:
+        - name: global.environmentName
+          value: {{ (include "argocd-applications.environmentName" $) | quote }}
+        - name: global.branch
+          value: {{ $application.branch | default $values.default.branch | include "toSlug" | quote }}
+        - name: global.applicationName
+          value: {{ $applicationName | include "toSlug" | quote }}
+        {{- range $parameter, $value := $application.parameters }}
+        - name: {{ $parameter }}
+          value: {{ $value | quote }}
+        {{- end }}
+  project: {{ $application.project | default $values.default.project | quote }}
+  {{- if eq $application.autoSync true }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  {{- else if and (ne $application.autoSync false) (eq $values.default.autoSync true) }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  {{- end }}
+---
+{{- end }}

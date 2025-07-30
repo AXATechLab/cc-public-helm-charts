@@ -1,0 +1,105 @@
+suite: test argocd-apps applications
+templates:
+  - templates/applications.yaml
+chart:
+  version: 1.0.0
+release:
+  name: my-release
+tests:
+  - it: should have correct applications
+    set:
+      environmentName: test
+      applications:
+        demo-fastify:
+          repoURL: 'https://github.com/AXATechLab/demo-fastify'
+          parameters:
+            app.image.tag: '$ARGOCD_APP_REVISION'
+            test.enabled: true
+        authoringtool-frontend:
+          repoURL: 'https://github.com/AXATechLab/cc-authoring-client'
+          branch: "feature/new-pipeline"
+          environmentManagerLogo: 'authoringtool-frontend.png'
+          autoSync: true
+          enableEnvSuffix: false
+          parameters:
+            app.image.tag: '$ARGOCD_APP_REVISION'
+        credentials:
+          repoURL: 'https://github.com/AXATechLab/cc-applications'
+          path: preprod/credentials
+          extraValuesFiles:
+            - values-prod.yaml
+    asserts:
+      - matchSnapshot: {}
+  - it: should have correct sync policy with default true
+    set:
+      default:
+        autoSync: true
+      applications:
+        demo-fastify:
+          repoURL: 'https://github.com/AXATechLab/demo-fastify'
+          autoSync: false
+        demo-fastify-2:
+          repoURL: 'https://github.com/AXATechLab/demo-fastify'
+    asserts:
+      - matchSnapshot: {}
+  - it: should have correct sync policy with default false
+    set:
+      default:
+        autoSync: false
+      applications:
+        demo-fastify:
+          repoURL: 'https://github.com/AXATechLab/demo-fastify'
+          autoSync: true
+        demo-fastify-2:
+          repoURL: 'https://github.com/AXATechLab/demo-fastify'
+    asserts:
+      - matchSnapshot: {}
+  - it: should have correct label based on application alias
+    set:
+      environmentName: "applications"
+      applications:
+        llm-claims-api:
+          alias: monorepo
+          namespace: tool-prod-axa-rev
+          project: tool-prod-axa-rev
+          branch: main
+          repoURL: 'https://github.com/AXATechLab/cc-applications'
+          path: "namespaces/dev-test/dependencies"
+          valuesFiles:
+            - values.yaml
+            - values-branches.yaml
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/application-name"]
+          value: "monorepo"
+  - it: should have correct branch name label
+    set:
+      applications:
+        authoringtool-frontend:
+          branch: "feat/ab-14371-link-to-rule-editor-always-goes-to-first-rule-no-focusnode"
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/branch"]
+          value: "feat-ab-14371-link-to-rule-editor-always-goes-to-first-rule-no"
+  - it: should render valuesObject correctly
+    set:
+      applications:
+        demo-fastify:
+          repoURL: 'https://github.com/AXATechLab/demo-fastify'
+          valuesObject:
+            common:
+              env:
+                DATABASE_DB: qa
+            authentication:
+              env:
+                some: value
+    asserts:
+      - equal:
+          path: spec.source.helm.valuesObject
+          value: 
+            authentication:
+              env:
+                some: value
+            common:
+              env:
+                DATABASE_DB: qa
