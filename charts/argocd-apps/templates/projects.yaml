@@ -8,6 +8,7 @@ metadata:
   annotations:
     helm.sh/resource-policy: keep
     argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
 spec:
   destinations:
     - name: '*'
