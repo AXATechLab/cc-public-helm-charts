@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   argocd-apps:
   - apiVersion: v2
+    created: "2025-08-06T09:52:37.263137379Z"
+    description: This Helm chart facilitates the dynamic generation of ArgoCD Application
+      resources
+    digest: 241caf94b6fb7e33c212bbb1709d1da0df72cf5488889636c9cf8955f1e57549
+    name: argocd-apps
+    type: application
+    urls:
+    - https://github.com/AXATechLab/cc-public-helm-charts/releases/download/argocd-apps-0.1.20/argocd-apps-0.1.20.tgz
+    version: 0.1.20
+  - apiVersion: v2
     created: "2025-08-06T09:48:17.445407555Z"
     description: This Helm chart facilitates the dynamic generation of ArgoCD Application
       resources
@@ -31,4 +41,4 @@ entries:
     urls:
     - https://github.com/AXATechLab/cc-public-helm-charts/releases/download/argocd-apps-0.1.17/argocd-apps-0.1.17.tgz
     version: 0.1.17
-generated: "2025-08-06T09:48:17.445563705Z"
+generated: "2025-08-06T09:52:37.263153018Z"
