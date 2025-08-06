@@ -5,6 +5,8 @@ kind: AppProject
 metadata:
   name: {{ $projectName }}
   namespace: tool-prod-axa-rev
+  annotations:
+    helm.sh/resource-policy: keep
 spec:
   destinations:
     - name: '*'
